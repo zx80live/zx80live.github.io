@@ -1,0 +1,16 @@
+#!/bin/sh
+mkdir $1
+cd $1
+mkdir -p src/{main,test}/{java,resources,scala}
+mkdir lib project target
+
+SCALA_VERSION='2.11.0'
+SBT_VERSION='0.13.2'
+PROJECT_NAME=$1
+PROJECT_VERSION='1.0-SNAPSHOT'
+
+echo 'name := "'$PROJECT_NAME'"' > build.sbt
+echo '' >> build.sbt
+echo 'version := "'$PROJECT_VERSION'"' >> build.sbt
+
+echo 'sbt.version='$SBT_VERSION > ./project/build.properties
