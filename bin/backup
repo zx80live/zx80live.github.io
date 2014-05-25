@@ -1,55 +1,48 @@
 #! /usr/bin/env sh
 
-# configuration
-TARGET_DIR=~/temp/backups/dev/projects
-CREATE_DIR=1
-SRC_LIST=$@
+# environment
+TARGET_DIR=~/temp/backups2
 
+# prepare filelist and options
+FILES=()
+TAG="untagged"
 
-# prepare config
-echo -e '[ \e[32mstart\e[0m]'
-if [[ -z "$TARGET_DIR" ]]		
-then
-	TARGET_DIR=.
-	CREATE_DIR=0
-fi
-
-if [[ -z "$SRC_LIST" ]]
-then
-	SRC_LIST=`ls -d */ | cut -f1 -d'/'`
-fi
-
-echo -e '[ \e[0;90mINFO\e[0m ] target: \t'$TARGET_DIR
-
-TIMESTAMP=`date +"%d%m%Y-%H%M%S"`
-echo -e '[ \e[0;90mINFO\e[0m ] timestamp: \t'$TIMESTAMP
-
-# backup action
-if [ $CREATE_DIR -eq 1 ]
-then
-	echo -e '[ \e[0;90mINFO\e[0m ] sub dir: \tenable'
-else
-	echo -e '[ \e[0;90mINFO\e[0m ] sub dir: \tdisable'
-fi
-
-for name in $SRC_LIST
+for e in $@
 do
-	targetName=$name"_"$TIMESTAMP.tar.gz
+	case $e in
+		.)	echo "file '.' does not support, skip" ;;
 
-	if [ $CREATE_DIR -eq 1 ]
-	then
-		targetPath=$TARGET_DIR/$name
-		infoString='\e[0;90m./\e[1;34m'$name'\e[0m\e[0;90m'/$targetName'\e[0m'
-	else
-		targetPath=$TARGET_DIR
-		infoString='\e[0;90m./\e[1;34m'$name'\e[0m\e[0;90m_'$TIMESTAMP.tar.gz'\e[0m'
-	fi
-	
-	echo -e '[\e[94mcreate\e[0m]\t\t'$infoString
-	mkdir -p $targetPath
-	tar -zcf $targetPath/$targetName ./$name
-	echo -e '\033[1A[  \e[0;90mOK\e[0m  ]\t\t'$infoString
-
+		-*) if [[ -f $e ]] || [[ -d $e ]]
+			then
+				FILES+=( $e )
+			else
+				TAG=${e:1}
+			fi
+			;;
+			
+		*)	FILES+=( $e ) ;;
+	esac
 done
 
+
+
+
+# create backups
+TIMESTAMP=`date +"%d%m%Y-%H%M%S"`
+echo -e '[ \e[32mstart\e[0m]'
+echo -e '[\e[0;90mtarget\e[0m] '$TARGET_DIR/$TAG
+
+for name in ${FILES[@]}
+do
+	targetName=$name"_"$TIMESTAMP.tar.gz
+	targetPath=$TARGET_DIR/$TAG/$name
+	info='\e[0;90m./\e[1;34m'$name'\e[0m\e[0;90m'/$targetName'\e[0m'
+
+	echo -e '[\e[94mcreate\e[0m]\t'$info
+	
+	mkdir -p $targetPath
+	tar -zcf $targetPath/$targetName ./$name
+
+	echo -e '\033[1A[  \e[0;90mOK\e[0m  ]\t'$info
+done
 echo -e '[ \e[32mdone \e[0m]'
