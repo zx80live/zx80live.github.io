@@ -1,0 +1,15 @@
+#!/bin/sh
+
+if [ "$#" -le 1 ]; then
+    echo [ERROR] enter source and target dirs
+  else
+    SOURCE=$1
+    TARGET=$2
+    echo [ MOVE] $SOURCE to $TARGET
+
+    mkdir -p $TARGET         
+    mv $SOURCE/* $TARGET
+    rm -R $SOURCE
+    ln -s $TARGET $SOURCE
+fi
+

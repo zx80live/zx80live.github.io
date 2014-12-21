@@ -1,0 +1,17 @@
+#!/bin/sh
+
+SNAPSHOTS=~/temp/ssd-snapshots
+mkdir -p $SNAPSHOTS
+
+if [ "$#" -le 1 ]; then
+    echo [ERROR] enter target mem-dir and name snapshot
+  else
+    SOURCE=$1
+    NAME=$2
+    TARGET_ARC=$SNAPSHOTS/$NAME.tar.gz
+    rm $TARGET_ARC
+
+    tar -zcf $TARGET_ARC $SOURCE 
+    echo [ SAVE] $SOURCE to $TARGET_ARC
+fi
+

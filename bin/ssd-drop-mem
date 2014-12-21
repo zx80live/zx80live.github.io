@@ -1,0 +1,14 @@
+#!/bin/sh
+
+if [ "$#" -le 1 ]; then
+    echo [ERROR] enter source and target dirs
+  else
+    SOURCE=$1
+    TARGET=$2
+    echo [ DROP] $SOURCE to $TARGET
+
+    mkdir -p $TARGET         
+    rm -R $SOURCE
+    ln -s $TARGET $SOURCE
+fi
+
